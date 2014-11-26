@@ -45,6 +45,11 @@ class Tree:
         node.children.append(lnode)
         node.children.append(rnode)
 
+        if node.parent is not None:
+            node.parent.children.remove(node)
+            node.parent.children.append(lnode)
+            node.parent.children.append(rnode)
+
         # hoist a splitter up into the node
 
         splitter = keys[1]
