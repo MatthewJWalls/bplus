@@ -117,6 +117,8 @@ if __name__ == "__main__":
 
     t = Tree()
 
+    # basic 
+
     assert t.insert(50)
     assert t.insert(100)
     assert t.insert(75)
@@ -126,6 +128,20 @@ if __name__ == "__main__":
     assert t.root.children[1].keys[0] == 75
     assert t.root.children[1].keys[1] == 100
     assert t.root.keys[0] == 75
+
+    # now add another value and check the hoist
+    
+    t.insert(200)
+    assert len(t.root.keys) == 2
+    assert t.root.keys[0] == 75
+    assert t.root.keys[1] == 100
+
+    assert len(t.root.children) == 3
+    assert len(t.root.keys) == 2
+    assert t.root.children[0].keys[0] == 50
+    assert t.root.children[1].keys[0] == 75
+    assert t.root.children[2].keys[0] == 100
+    assert t.root.children[2].keys[1] == 200
 
     print
     inspectTree(t)
