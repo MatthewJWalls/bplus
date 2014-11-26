@@ -113,6 +113,7 @@ class Tree:
             self.split(node, val)
         else:
             node.keys.append(val)
+            node.keys.sort()
 
 
 def inspectTree(t):
@@ -125,15 +126,12 @@ def inspectTree(t):
 
     chiddlers(t.root)
 
-    #print "root:"
-    #print "  children: %d" % len(t.root.children)
-    #print "  keys: %s" % t.root.keys
-
 if __name__ == "__main__":
 
     t = Tree()
     t.insert(50)
     t.insert(100)
+    t.insert(75)
     t.insert(75)
     t.insert(20)
 
