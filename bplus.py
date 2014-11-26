@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+debugMode = False
+
+def debug(s):
+    if debugMode:
+        print s
+
 class Node:
 
     def __init__(self, parent=None):
@@ -96,11 +102,15 @@ class Tree:
 
         if found:
             return False
+
+        debug("inserting %s into node: %s" % (val, node))
         
         if len(node.keys) == self.threshold:
             # split node
+            debug("  splitting insert")
             self.split(node, val)
         else:
+            debug("  normal insert")
             node.keys.append(val)
             node.keys.sort()
 
@@ -139,6 +149,7 @@ if __name__ == "__main__":
 
     # now add another value and check the hoist
     
+    debugMode = True
     t.insert(200)
     inspectTree(t)
 
