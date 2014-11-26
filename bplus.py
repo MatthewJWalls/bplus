@@ -127,11 +127,11 @@ if __name__ == "__main__":
     inspectTree(t)
 
     print
-    t.find(t.root, 50)
+    t.find(50)
     print
-    t.find(t.root, 100)
+    t.find(100)
     print
-    t.find(t.root, 75)
+    t.find(75)
     print
-    t.find(t.root, 90)
+    t.find(90)
 
