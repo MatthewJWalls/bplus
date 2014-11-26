@@ -7,6 +7,9 @@ class Node:
         self.keys = []
         self.isLeaf = True
 
+    def __str__(self):
+        return "node:<%s>" % self.keys
+
 class Tree:
     
     def __init__(self):
@@ -76,9 +79,6 @@ class Tree:
                     nodeToDescend += 1
                     print "    no"
 
-            if nodeToDescend is None:
-                nodeToDescend 
-
             print "  Descending to a child node %d" % nodeToDescend
             return self.find(val, node.children[nodeToDescend])
                     
@@ -100,22 +100,34 @@ class Tree:
 
         print "inserting %s" % val
 
-        #found, node = self.find(sval)
+        found, node = self.find(val)
+        assert node is not None
+
+        if found:
+            print "Dude,", val, "was already in the tree!"
+            return
         
-        if len(self.root.keys) == self.threshold:
-            # split root
+        if len(node.keys) == self.threshold:
+            # split node
             print "splitting"
-            self.split(self.root, val)
+            self.split(node, val)
         else:
-            self.root.keys.append(val)
+            node.keys.append(val)
 
 
 def inspectTree(t):
     """ Given a tree, inspects it """
 
-    print "root:"
-    print "  children: %d" % len(t.root.children)
-    print "  keys: %s" % t.root.keys
+    def chiddlers(n, inc=1):
+        print "%s%s" % (" "*inc, n)
+        for c in n.children:
+            chiddlers(c, inc+1)
+
+    chiddlers(t.root)
+
+    #print "root:"
+    #print "  children: %d" % len(t.root.children)
+    #print "  keys: %s" % t.root.keys
 
 if __name__ == "__main__":
 
@@ -123,15 +135,17 @@ if __name__ == "__main__":
     t.insert(50)
     t.insert(100)
     t.insert(75)
+    t.insert(20)
 
+    print
     inspectTree(t)
 
-    print
-    t.find(50)
-    print
-    t.find(100)
-    print
-    t.find(75)
-    print
-    t.find(90)
+    #print
+    #t.find(50)
+    #print
+    #t.find(100)
+    #print
+    #t.find(75)
+    #print
+    #t.find(90)
 
