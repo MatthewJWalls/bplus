@@ -6,7 +6,6 @@ class Node:
         self.parent   = parent
         self.children = []
         self.keys     = []
-        self.isLeaf   = True
 
     def __str__(self):
         return "node:<%s>" % self.keys
@@ -21,7 +20,6 @@ class Tree:
         """ given a (leaf) node and a value, splits node 
         in order to add value to it """
 
-        assert node.isLeaf
         assert len(node.children) == 0
         assert len(node.keys) == self.threshold
 
@@ -29,7 +27,7 @@ class Tree:
         keys.append(val)
         keys.sort()
 
-        # push keys out into children
+        # split this node into two other nodes (l and r)
 
         lnode = Node(node)
         rnode = Node(node)
@@ -43,11 +41,17 @@ class Tree:
 
         # hoist a splitter up into the node
 
-        node.keys = [keys[1]]
+        splitter = keys[1]
 
-        # node is no longer a leaf
-
-        node.isLeaf = False
+        if node.parent is None:
+            # root node
+            node.keys = [splitter]
+        else:
+            # non root node
+            if len(node.parent.keys) == self.threshold:
+                self.split(node.parent, splitter)
+            else:
+                node.parent.keys.append(splitter)
 
     def find(self, val, node=None):
 
@@ -111,6 +115,7 @@ def inspectTree(t):
         for c in n.children:
             chiddlers(c, inc+1)
 
+    print "--"
     chiddlers(t.root)
 
 if __name__ == "__main__":
@@ -120,8 +125,11 @@ if __name__ == "__main__":
     # basic 
 
     assert t.insert(50)
+    inspectTree(t)
     assert t.insert(100)
+    inspectTree(t)
     assert t.insert(75)
+    inspectTree(t)
     assert not t.insert(75)
 
     assert t.root.children[0].keys[0] == 50
@@ -132,6 +140,8 @@ if __name__ == "__main__":
     # now add another value and check the hoist
     
     t.insert(200)
+    inspectTree(t)
+
     assert len(t.root.keys) == 2
     assert t.root.keys[0] == 75
     assert t.root.keys[1] == 100
