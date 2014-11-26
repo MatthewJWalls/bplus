@@ -2,10 +2,11 @@
 
 class Node:
 
-    def __init__(self):
+    def __init__(self, parent=None):
+        self.parent   = parent
         self.children = []
-        self.keys = []
-        self.isLeaf = True
+        self.keys     = []
+        self.isLeaf   = True
 
     def __str__(self):
         return "node:<%s>" % self.keys
@@ -30,8 +31,8 @@ class Tree:
 
         # push keys out into children
 
-        lnode = Node()
-        rnode = Node()
+        lnode = Node(node)
+        rnode = Node(node)
 
         lnode.keys.append(keys[0])
         rnode.keys.append(keys[1])
@@ -59,61 +60,47 @@ class Tree:
         if node is None:
             node = self.root
 
-        print "inspecting a node"
-
         if node.children:
 
             # non-leaf, we need to work out what child to
             # descend to, and then recurse
 
-            print "  Not a leaf"
-
             nodeToDescend = 0
 
             for i, k in enumerate(node.keys):
-                print "  %d < %d?" % (val, k)
                 if val < k:
-                    print "    yes"
                     break
                 else:
                     nodeToDescend += 1
-                    print "    no"
 
-            print "  Descending to a child node %d" % nodeToDescend
             return self.find(val, node.children[nodeToDescend])
                     
         else:
 
             # leaf
 
-            print "  Leaf"
-
             if val in node.keys:
-                print "  Found", val, "in the tree"
                 return (True, node)
             else:
                 # it's not in the tree
-                print "  ", val, "was not in the tree"
                 return (False, node)
 
     def insert(self, val):
-
-        print "inserting %s" % val
 
         found, node = self.find(val)
         assert node is not None
 
         if found:
-            print "Dude,", val, "was already in the tree!"
-            return
+            return False
         
         if len(node.keys) == self.threshold:
             # split node
-            print "splitting"
             self.split(node, val)
         else:
             node.keys.append(val)
             node.keys.sort()
+
+        return True
 
 
 def inspectTree(t):
@@ -129,21 +116,17 @@ def inspectTree(t):
 if __name__ == "__main__":
 
     t = Tree()
-    t.insert(50)
-    t.insert(100)
-    t.insert(75)
-    t.insert(75)
-    t.insert(20)
+
+    assert t.insert(50)
+    assert t.insert(100)
+    assert t.insert(75)
+    assert not t.insert(75)
+
+    assert t.root.children[0].keys[0] == 50
+    assert t.root.children[1].keys[0] == 75
+    assert t.root.children[1].keys[1] == 100
+    assert t.root.keys[0] == 75
 
     print
     inspectTree(t)
-
-    #print
-    #t.find(50)
-    #print
-    #t.find(100)
-    #print
-    #t.find(75)
-    #print
-    #t.find(90)
 
