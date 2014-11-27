@@ -84,6 +84,13 @@ class Tree:
 
             self.root = newroot
 
+        else:
+
+            # internal node
+
+            debug("  internal node")
+            raise Exception("I haven't accounted for this yet!")
+
     def find(self, val, node=None):
 
         # recurse down the right tree path until we hit the
@@ -195,5 +202,11 @@ if __name__ == "__main__":
 
     debugMode = True
     t.insert(300)
+    t.inspect()
+
+    t.insert(55)
+    t.inspect()
+
+    t.insert(60)
     t.inspect()
 
