@@ -22,51 +22,67 @@ class Tree:
         self.root = Node()
         self.threshold = 2 # this is hard coded for now
 
-    def split(self, node, val):
-        """ given a (leaf) node and a value, splits node 
-        in order to add value to it """
+    def overflow(self, node):
+        """ overflows a node """
 
-        assert len(node.keys) == self.threshold
+        debug("overflowing")
+        assert len(node.keys) > self.threshold
 
         keys = node.keys
-        keys.append(val)
-        keys.sort()
 
-        # split this node into two other nodes (l and r)
+        if not node.children:
 
-        lnode = Node(node)
-        rnode = Node(node)
+            # is leaf
 
-        lnode.keys.append(keys[0])
-        rnode.keys.append(keys[1])
-        rnode.keys.append(keys[2])
+            debug ("  is leaf")
 
-        node.children.append(lnode)
-        node.children.append(rnode)
+            if not node.parent:
+                node.parent = Node(None)
+                self.root = node.parent
 
-        if node.parent is not None:
-            node.parent.children.remove(node)
-            lnode.parent = node.parent
-            rnode.parent = node.parent
+            lnode = Node(node.parent)
+            rnode = Node(node.parent)
+
+            if node in node.parent.children:
+                node.parent.children.remove(node)
+
             node.parent.children.append(lnode)
             node.parent.children.append(rnode)
-            debug("parent now has %d children" % len(node.parent.children))
 
-        # put the hoist into the parent
-        
-        hoist = keys[1]
+            lnode.keys.append(keys[0])
+            rnode.keys.append(keys[1])
+            rnode.keys.append(keys[2])
 
-        if node.parent is None:
-            # root node
-            debug("As we are splitting the root, the hoist is erasing keys to [%s]" % hoist)
-            node.keys = [hoist]
-        else:
-            # non root node
-            debug("As we are NOT splitting the root, the hoist %s is being added to parent %s" % (hoist, node.parent))
-            if len(node.parent.keys) == self.threshold:
-                self.split(node.parent, hoist)
-            else:
-                node.parent.keys.append(hoist)
+            hoist = keys[1]
+            node.parent.keys.append(hoist)
+
+            if len(node.parent.keys) > self.threshold:
+                self.overflow(node.parent)
+
+        elif node == self.root:
+
+            # I am root
+
+            debug("  is root")
+
+            # My keys will look like [A|B|C]
+
+            newroot = Node(None)
+            newroot.keys.append(keys[1])
+
+            lnode = Node(node.parent)
+            rnode = Node(node.parent)
+
+            lnode.keys.append(keys[0])
+            rnode.keys.append(keys[2])
+
+            map(lnode.children.append, node.children[:2])
+            map(rnode.children.append, node.children[2:])
+
+            newroot.children.append(lnode)
+            newroot.children.append(rnode)
+
+            self.root = newroot
 
     def find(self, val, node=None):
 
@@ -99,6 +115,7 @@ class Tree:
             # leaf
 
             if val in node.keys:
+                # found it
                 return (True, node)
             else:
                 # it's not in the tree
@@ -113,15 +130,17 @@ class Tree:
             return False
 
         debug("inserting %s into node: %s" % (val, node))
+
+        node.keys.append(val)
+        node.keys.sort()
         
-        if len(node.keys) == self.threshold:
-            # split node
-            debug("  splitting insert")
-            self.split(node, val)
+        if len(node.keys) > self.threshold:
+            # overflow
+            debug("  overflowing")
+            self.overflow(node)
         else:
+            # no overflow
             debug("  normal insert")
-            node.keys.append(val)
-            node.keys.sort()
 
         return True
 
