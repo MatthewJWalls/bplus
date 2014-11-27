@@ -44,11 +44,14 @@ class Tree:
             lnode = Node(node.parent)
             rnode = Node(node.parent)
 
+            insertPosition = 0
+
             if node in node.parent.children:
+                insertPosition = node.parent.children.index(node)
                 node.parent.children.remove(node)
 
-            node.parent.children.append(lnode)
-            node.parent.children.append(rnode)
+            node.parent.children.insert(insertPosition, rnode)
+            node.parent.children.insert(insertPosition, lnode)
 
             lnode.keys.append(keys[0])
             rnode.keys.append(keys[1])
@@ -90,7 +93,6 @@ class Tree:
             newroot.children.append(lnode)
             newroot.children.append(rnode)
 
-            #newroot.children.sort()
             newroot.keys.sort()
 
             self.root = newroot
@@ -100,7 +102,31 @@ class Tree:
             # internal node
 
             debug("  internal node")
-            raise Exception("I haven't accounted for this yet!")
+
+            lnode = Node(node.parent)
+            rnode = Node(node.parent)
+            
+            lnode.keys.append(keys[0])
+            rnode.keys.append(keys[2])
+            
+            for child in node.children[:2]:
+                lnode.children.append(child)
+                child.parent = lnode
+
+            for child in node.children[2:]:
+                rnode.children.append(child)
+                child.parent = rnode
+
+            if node in node.parent.children:
+                insertPosition = node.parent.children.index(node)
+                node.parent.children.remove(node)
+
+            node.parent.children.insert(insertPosition, rnode)
+            node.parent.children.insert(insertPosition, lnode)
+
+            hoist = keys[1]
+            node.parent.keys.append(hoist)
+            node.parent.keys.sort()            
 
     def find(self, val, node=None):
 
@@ -180,22 +206,14 @@ if __name__ == "__main__":
 
     t = Tree()
 
-    # basic 
+    basicSet = [1, 4, 5, 2, 3]
+    advancedSet = [50, 100, 75, 200, 300, 400, 500]
 
-    t.insert(1)
-    t.inspect()
+    testSet = advancedSet
 
-    t.insert(4)
-    t.inspect()
+    for n in testSet:
+        t.insert(n)
+        t.inspect()
 
-    t.insert(5)
-    t.inspect()
 
-    t.insert(2)
-    t.inspect()
 
-    debugMode = True
-
-    t.insert(3)
-    t.inspect()
-    
