@@ -26,7 +26,6 @@ class Tree:
         """ given a (leaf) node and a value, splits node 
         in order to add value to it """
 
-        assert len(node.children) == 0
         assert len(node.keys) == self.threshold
 
         keys = node.keys
@@ -47,22 +46,27 @@ class Tree:
 
         if node.parent is not None:
             node.parent.children.remove(node)
+            lnode.parent = node.parent
+            rnode.parent = node.parent
             node.parent.children.append(lnode)
             node.parent.children.append(rnode)
+            debug("parent now has %d children" % len(node.parent.children))
 
-        # hoist a splitter up into the node
-
-        splitter = keys[1]
+        # put the hoist into the parent
+        
+        hoist = keys[1]
 
         if node.parent is None:
             # root node
-            node.keys = [splitter]
+            debug("As we are splitting the root, the hoist is erasing keys to [%s]" % hoist)
+            node.keys = [hoist]
         else:
             # non root node
+            debug("As we are NOT splitting the root, the hoist %s is being added to parent %s" % (hoist, node.parent))
             if len(node.parent.keys) == self.threshold:
-                self.split(node.parent, splitter)
+                self.split(node.parent, hoist)
             else:
-                node.parent.keys.append(splitter)
+                node.parent.keys.append(hoist)
 
     def find(self, val, node=None):
 
@@ -122,16 +126,18 @@ class Tree:
         return True
 
 
-def inspectTree(t):
-    """ Given a tree, inspects it """
+    def inspect(self):
+        """ Given a tree, inspects it """
 
-    def chiddlers(n, inc=1):
-        print "%s%s" % (" "*inc, n)
-        for c in n.children:
-            chiddlers(c, inc+1)
+        def chiddlers(n, inc=1):
+            print "%s%s" % (" "*inc, n)
+            for c in n.children:
+                chiddlers(c, inc+1)
 
-    print "--"
-    chiddlers(t.root)
+        print
+        print "-start-"
+        chiddlers(self.root)
+        print "-end-"
 
 if __name__ == "__main__":
 
@@ -140,11 +146,11 @@ if __name__ == "__main__":
     # basic 
 
     assert t.insert(50)
-    inspectTree(t)
+    t.inspect()
     assert t.insert(100)
-    inspectTree(t)
+    t.inspect()
     assert t.insert(75)
-    inspectTree(t)
+    t.inspect()
     assert not t.insert(75)
 
     assert t.root.children[0].keys[0] == 50
@@ -153,10 +159,9 @@ if __name__ == "__main__":
     assert t.root.keys[0] == 75
 
     # now add another value and check the hoist
-    
-    debugMode = True
+
     t.insert(200)
-    inspectTree(t)
+    t.inspect()
 
     assert len(t.root.keys) == 2
     assert t.root.keys[0] == 75
@@ -169,6 +174,7 @@ if __name__ == "__main__":
     assert t.root.children[2].keys[0] == 100
     assert t.root.children[2].keys[1] == 200
 
-    print
-    inspectTree(t)
+    debugMode = True
+    t.insert(300)
+    t.inspect()
 
