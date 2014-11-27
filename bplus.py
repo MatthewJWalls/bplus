@@ -25,7 +25,7 @@ class Tree:
     def overflow(self, node):
         """ overflows a node """
 
-        debug("overflowing")
+        debug("overflowing node %s with parent %s" % (node, node.parent))
         assert len(node.keys) > self.threshold
 
         keys = node.keys
@@ -55,8 +55,10 @@ class Tree:
 
             hoist = keys[1]
             node.parent.keys.append(hoist)
+            node.parent.keys.sort()
 
             if len(node.parent.keys) > self.threshold:
+                debug("  I noticed my parent looks like %s, so I am overflowing" % node.parent)
                 self.overflow(node.parent)
 
         elif node == self.root:
@@ -70,17 +72,25 @@ class Tree:
             newroot = Node(None)
             newroot.keys.append(keys[1])
 
-            lnode = Node(node.parent)
-            rnode = Node(node.parent)
+            lnode = Node(newroot)
+            rnode = Node(newroot)
 
             lnode.keys.append(keys[0])
             rnode.keys.append(keys[2])
 
-            map(lnode.children.append, node.children[:2])
-            map(rnode.children.append, node.children[2:])
+            for child in node.children[:2]:
+                lnode.children.append(child)
+                child.parent = lnode
+
+            for child in node.children[2:]:
+                rnode.children.append(child)
+                child.parent = rnode
 
             newroot.children.append(lnode)
             newroot.children.append(rnode)
+
+            #newroot.children.sort()
+            newroot.keys.sort()
 
             self.root = newroot
 
@@ -156,7 +166,7 @@ class Tree:
         """ Given a tree, inspects it """
 
         def chiddlers(n, inc=1):
-            print "%s%s" % (" "*inc, n)
+            print "%s%s (parent = %s)" % (" "*inc, n, n.parent)
             for c in n.children:
                 chiddlers(c, inc+1)
 
