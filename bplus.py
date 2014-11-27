@@ -207,7 +207,7 @@ if __name__ == "__main__":
     t = Tree()
 
     basicSet = [1, 4, 5, 2, 3]
-    advancedSet = [50, 100, 75, 200, 300, 400, 500]
+    advancedSet = [50, 100, 75, 200, 300, 400, 500, 40, 45, 55]
 
     testSet = advancedSet
 
