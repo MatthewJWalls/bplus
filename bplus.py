@@ -2,6 +2,8 @@
 
 debugMode = False
 
+import sys
+
 def debug(s):
     if debugMode:
         print s
@@ -126,7 +128,10 @@ class Tree:
 
             hoist = keys[1]
             node.parent.keys.append(hoist)
-            node.parent.keys.sort()            
+            node.parent.keys.sort()
+
+            if len(node.parent.keys) > self.threshold:
+                self.overflow(node.parent)
 
     def find(self, val, node=None):
 
@@ -208,8 +213,12 @@ if __name__ == "__main__":
 
     basicSet = [1, 4, 5, 2, 3]
     advancedSet = [50, 100, 75, 200, 300, 400, 500, 40, 45, 55]
+    megaSet = advancedSet + [600, 700, 800, 900, 1000, 1100, 1200, 1300]
 
-    testSet = advancedSet
+    testSet = megaSet
+
+    if len(sys.argv) > 1:
+        testSet = [ int(n) for n in sys.argv[1:]]
 
     for n in testSet:
         t.insert(n)
