@@ -37,6 +37,7 @@ class Tree:
             debug ("  is leaf")
 
             if not node.parent:
+                debug("  Creating parent and resetting root")
                 node.parent = Node(None)
                 self.root = node.parent
 
@@ -181,42 +182,20 @@ if __name__ == "__main__":
 
     # basic 
 
-    assert t.insert(50)
-    t.inspect()
-    assert t.insert(100)
-    t.inspect()
-    assert t.insert(75)
-    t.inspect()
-    assert not t.insert(75)
-
-    assert t.root.children[0].keys[0] == 50
-    assert t.root.children[1].keys[0] == 75
-    assert t.root.children[1].keys[1] == 100
-    assert t.root.keys[0] == 75
-
-    # now add another value and check the hoist
-
-    t.insert(200)
+    t.insert(1)
     t.inspect()
 
-    assert len(t.root.keys) == 2
-    assert t.root.keys[0] == 75
-    assert t.root.keys[1] == 100
+    t.insert(4)
+    t.inspect()
 
-    assert len(t.root.children) == 3
-    assert len(t.root.keys) == 2
-    assert t.root.children[0].keys[0] == 50
-    assert t.root.children[1].keys[0] == 75
-    assert t.root.children[2].keys[0] == 100
-    assert t.root.children[2].keys[1] == 200
+    t.insert(5)
+    t.inspect()
+
+    t.insert(2)
+    t.inspect()
 
     debugMode = True
-    t.insert(300)
-    t.inspect()
 
-    t.insert(55)
+    t.insert(3)
     t.inspect()
-
-    t.insert(60)
-    t.inspect()
-
+    
