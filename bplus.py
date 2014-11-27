@@ -137,7 +137,7 @@ class Tree:
 
         # recurse down the right tree path until we hit the
         # leaf node that the value should be in, then return
-        # a tuple, t where t[0] is True or False depending on
+        # a tuple, t, where t[0] is True or False depending on
         # whether the value was found, and t[1] is the leaf
         # node where the value _should_ have been.
 
@@ -194,17 +194,17 @@ class Tree:
         return True
 
 
-    def inspect(self):
-        """ Given a tree, inspects it """
+    def pretty(self):
+        """ Given a tree, prettys it """
 
-        def chiddlers(n, inc=1):
+        def printNode(n, inc=1):
             print "%s%s (parent = %s)" % (" "*inc, n, n.parent)
             for c in n.children:
-                chiddlers(c, inc+1)
+                printNode(c, inc+1)
 
         print
         print "-start-"
-        chiddlers(self.root)
+        printNode(self.root)
         print "-end-"
 
 if __name__ == "__main__":
@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     for n in testSet:
         t.insert(n)
-        t.inspect()
+        t.pretty()
 
 
 
