@@ -10,10 +10,12 @@ def debug(s):
 
 class Node:
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, prevNode=None, nextNode=None):
         self.parent   = parent
         self.children = []
         self.keys     = []
+        self.prevNode = prevNode
+        self.nextNode = nextNode
 
     def __str__(self):
         return "node:<%s>" % self.keys
@@ -45,6 +47,17 @@ class Tree:
 
             lnode = Node(node.parent)
             rnode = Node(node.parent)
+
+            lnode.prevNode = node.prevNode
+            lnode.nextNode = rnode
+            rnode.prevNode = lnode
+            rnode.nextNode = node.nextNode
+
+            if node.prevNode:
+                node.prevNode.nextNode = lnode
+
+            if node.nextNode:
+                node.nextNode.prevNode = rnode
 
             insertPosition = 0
 
@@ -202,11 +215,50 @@ class Tree:
             for c in n.children:
                 printNode(c, inc+1)
 
+        # print the tree structure
+
         print
         print "-start-"
+
         printNode(self.root)
+
+        # get the left-most node
+
+        node = self.root
+        while node.children:
+            node = node.children[0]
+
+        # print the linked-list structure
+
+        nodes = [node]
+        while node.nextNode:
+            node = node.nextNode
+            nodes.append(node)
+
+        print
+        print " -> ".join([str(n) for n in nodes])
+
+        # get the right-most node
+
+        node = self.root
+        while node.children:
+            node = node.children[-1]
+
+        # print the linked list structure
+
+        nodes = [node]
+        while node.prevNode:
+            node = node.prevNode
+            nodes.append(node)
+
+        print
+        print " -> ".join([str(n) for n in nodes])
+
+        print
         print "-end-"
 
+
+            
 if __name__ == "__main__":
 
     t = Tree()
@@ -215,7 +267,7 @@ if __name__ == "__main__":
     advancedSet = [50, 100, 75, 200, 300, 400, 500, 40, 45, 55]
     megaSet = advancedSet + [600, 700, 800, 900, 1000, 1100, 1200, 1300]
 
-    testSet = megaSet
+    testSet = advancedSet
 
     if len(sys.argv) > 1:
         testSet = [ int(n) for n in sys.argv[1:]]
