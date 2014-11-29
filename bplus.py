@@ -183,6 +183,48 @@ class Tree:
                 # it's not in the tree
                 return (False, node)
 
+    def underflow(self, node):
+        """ Handles merging/shrinking of nodes for underflow """
+
+        assert len(node.keys) < self.threshold/2
+
+        # deletion is even more complicated than insertion. Apparently
+        # some implementations just recreate the tree from scratch when
+        # there are more deleted items than normal ones and don't lose
+        # much performance. Since I'm trying to learn though, I guess
+        # I'll implement it for real. Here goes.
+
+        debug("Underflowing %s" % node)
+
+        if node == self.root:
+
+            # if root
+
+            # todo: collapse root
+            # todo: only child becomes new root
+
+            debug("  Was root node")
+            raise Exception("Not implemented yet")
+        
+        else:
+
+            # if not root
+
+            # do we have any siblings that have more than the minimum number of keys?
+
+            debug("  Not root.")
+            debug("  Going to try looking for siblings")
+            isCandidate = lambda n: n != node and len(n.keys) > self.threshold/2
+            candidates = [n for n in node.parent.children if isCandidate(n) ]
+
+            if len(candidates) > 0:
+                # found a sibling to borrow from.
+                debug("  candidate siblings : %s" % ", ".join([str(s) for s in candidates]))
+            else:
+                # no sibling. Forced to merge
+                debug("  no candidate siblings. Reverting to merge")
+            
+
     def insert(self, val):
 
         found, node = self.find(val)
@@ -206,6 +248,26 @@ class Tree:
 
         return True
 
+    def delete(self, val):
+
+        found, node = self.find(val)
+        assert node is not None
+
+        if not found:
+            return False
+
+        debug("deleting %s from node %s" % (val, node))
+
+        node.keys.remove(val)
+
+        if len(node.keys) < self.threshold/2:
+            # underflow
+            self.underflow(node)
+        else:
+            # no underflow
+            debug("  normal delete")
+
+        return True
 
     def pretty(self):
         """ Given a tree, prettys it """
@@ -263,11 +325,11 @@ if __name__ == "__main__":
 
     t = Tree()
 
-    basicSet = [1, 4, 5, 2, 3]
+    basicSet = [1, 2, 3, 4, 5]
     advancedSet = [50, 100, 75, 200, 300, 400, 500, 40, 45, 55]
     megaSet = advancedSet + [600, 700, 800, 900, 1000, 1100, 1200, 1300]
 
-    testSet = advancedSet
+    testSet = basicSet
 
     if len(sys.argv) > 1:
         testSet = [ int(n) for n in sys.argv[1:]]
@@ -276,5 +338,6 @@ if __name__ == "__main__":
         t.insert(n)
         t.pretty()
 
-
+    debugMode = True
+    t.delete(testSet[-3])
 
