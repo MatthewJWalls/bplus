@@ -220,10 +220,27 @@ class Tree:
             if len(candidates) > 0:
                 # found a sibling to borrow from.
                 debug("  candidate siblings : %s" % ", ".join([str(s) for s in candidates]))
+
+                candidate = candidates[-1] #  prefer right-appropriation
+                
+                if node.parent.children.index(candidate) > node.parent.children.index(node):
+                    debug("  this is a right-appropriation")
+                    swapper = candidate.keys[0]
+                    candidate.keys.remove(swapper)
+                    node.keys.append(swapper)
+                    debug("  borrowing %s" % swapper)
+                    node.parent.keys = [candidate.keys[0]] # this is wrong fix later
+                else:
+                    debug("  this is a left-appropriation")
+                    candidate.keys.remove(swapper)
+                    node.keys.insert(0, swapper)
+                    debug("  borrowing %s" % swapper)
+                    node.parent.keys = [swapper] # this is wrong fix later
+
             else:
                 # no sibling. Forced to merge
                 debug("  no candidate siblings. Reverting to merge")
-            
+                raise Exception("Not implemented yet")
 
     def insert(self, val):
 
@@ -325,6 +342,10 @@ if __name__ == "__main__":
 
     t = Tree()
 
+    # for ease of testing, positive integers denote insertions, and
+    # negative integers denote deletions. So [5, 3, -3] means insert
+    # 5, insert 3, then remove 3.
+
     basicSet = [1, 2, 3, 4, 5]
     advancedSet = [50, 100, 75, 200, 300, 400, 500, 40, 45, 55]
     megaSet = advancedSet + [600, 700, 800, 900, 1000, 1100, 1200, 1300]
@@ -334,10 +355,13 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         testSet = [ int(n) for n in sys.argv[1:]]
 
-    for n in testSet:
-        t.insert(n)
-        t.pretty()
-
     debugMode = True
-    t.delete(testSet[-3])
+
+    for n in testSet:
+        if n > 0:
+            t.insert(n)
+            t.pretty()
+        else:
+            t.delete(abs(n))
+            t.pretty()
 
