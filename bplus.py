@@ -204,7 +204,7 @@ class Tree:
             # todo: only child becomes new root
 
             debug("  Was root node")
-            raise Exception("Not implemented yet")
+            raise Exception("Root underflow not implemented yet")
         
         else:
 
@@ -246,7 +246,20 @@ class Tree:
                 # no candidates. Forced to merge
 
                 debug("  no candidate siblings. Reverting to merge")
-                raise Exception("Not implemented yet")
+
+                merger = siblings[-1] #  prefer right-merge
+
+                if node.parent.children.index(merger) > node.parent.children.index(node):
+                    node.parent.children.remove(node)
+                    del node.parent.keys[0]
+                else:
+                    node.parent.children.remove(node)
+                    del node.parent.keys[-1]
+                
+                if len(node.parent.keys) < self.threshold/2:
+                    self.underflow(node.parent)
+                
+
 
     def insert(self, val):
 
@@ -279,7 +292,7 @@ class Tree:
         if not found:
             return False
 
-        debug("deleting %s from node %s" % (val, node))
+        debug("deleting %s from %s" % (val, node))
 
         node.keys.remove(val)
 
@@ -341,7 +354,6 @@ class Tree:
 
         print
         print "-end-"
-
 
             
 if __name__ == "__main__":
