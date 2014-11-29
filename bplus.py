@@ -200,11 +200,14 @@ class Tree:
 
             # if root
 
-            # todo: collapse root
-            # todo: only child becomes new root
-
             debug("  Was root node")
-            raise Exception("Root underflow not implemented yet")
+
+            if len(node.children) == 1:
+                self.root = node.children[0]
+            elif len(node.children) == 0:
+                pass
+            else:
+                raise Exception("Should we even be here?")
         
         else:
 
@@ -214,8 +217,9 @@ class Tree:
 
             debug("  Not root.")
             debug("  Going to try looking for siblings")
-            siblings = [n for n in node.parent.children if n != node]
-            candidates = [n for n in siblings if len(n.keys) > (self.threshold/2)+1 ]
+            dist = lambda x: abs(node.parent.children.index(node) - node.parent.children.index(n))
+            siblings = [n for n in node.parent.children if dist(n) == 1]
+            candidates = [n for n in siblings if len(n.keys) > (self.threshold/2)]
 
             assert len(siblings) > 0
 
@@ -236,6 +240,7 @@ class Tree:
                     node.parent.keys = [candidate.keys[0]] # this is wrong fix later
                 else:
                     debug("  this is a left-appropriation")
+                    swapper = candidate.keys[-1]
                     candidate.keys.remove(swapper)
                     node.keys.insert(0, swapper)
                     debug("  borrowing %s" % swapper)
