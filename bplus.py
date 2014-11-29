@@ -214,11 +214,15 @@ class Tree:
 
             debug("  Not root.")
             debug("  Going to try looking for siblings")
-            isCandidate = lambda n: n != node and len(n.keys) > self.threshold/2
-            candidates = [n for n in node.parent.children if isCandidate(n) ]
+            siblings = [n for n in node.parent.children if n != node]
+            candidates = [n for n in siblings if len(n.keys) > (self.threshold/2)+1 ]
+
+            assert len(siblings) > 0
 
             if len(candidates) > 0:
+
                 # found a sibling to borrow from.
+
                 debug("  candidate siblings : %s" % ", ".join([str(s) for s in candidates]))
 
                 candidate = candidates[-1] #  prefer right-appropriation
@@ -238,7 +242,9 @@ class Tree:
                     node.parent.keys = [swapper] # this is wrong fix later
 
             else:
-                # no sibling. Forced to merge
+
+                # no candidates. Forced to merge
+
                 debug("  no candidate siblings. Reverting to merge")
                 raise Exception("Not implemented yet")
 
